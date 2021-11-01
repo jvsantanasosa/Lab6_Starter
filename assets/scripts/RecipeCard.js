@@ -3,6 +3,9 @@ class RecipeCard extends HTMLElement {
     // Part 1 Expose - TODO
 
     // You'll want to attach the shadow DOM here
+
+    super();
+    this.attachShadow({mode: 'open'});
   }
 
   set data(data) {
@@ -100,6 +103,76 @@ class RecipeCard extends HTMLElement {
     // created in the constructor()
 
     // Part 1 Expose - TODO
+      
+    var img = document.createElement('img');
+
+    var imgSrc =  searchForKey(data, "thumbnailUrl"); 
+    img.setAttribute("src", imgSrc);  
+    
+    var imgTitle = searchForKey(data, "headline");  
+    img.setAttribute("alt", imgTitle); 
+     
+    card.appendChild(img); 
+
+    var title = document.createElement('p'); 
+    title.className = "title"; 
+
+    var linkToArticle = getUrl(data); 
+    var link = document.createElement('a'); 
+    link.innerText = imgTitle; 
+    link.setAttribute("href", linkToArticle); 
+    
+    title.appendChild(link); 
+    card.appendChild(title);
+    
+    var organization = getOrganization(data);
+    var org = document.createElement('p');
+    org.className = "organization";
+    org.innerText = organization; 
+    card.appendChild(org); 
+
+    var rating = document.createElement('div');
+    rating.className = "rating";
+    var score = document.createElement('span');
+    rating.appendChild(score);
+
+    var ratV = searchForKey(data, "aggregateRating")?.ratingValue;
+    var ratC = searchForKey(data, "aggregateRating")?.ratingCount;
+
+    if (ratV) { 
+
+      var ratCount = document.createElement('span');
+      var ratImg = document.createElement('img');
+
+      
+      score.innerText = Math.round(ratV*100)/100; 
+      var ratImgScore = Math.round(ratV); 
+      ratImg.setAttribute('src', `assets/images/icons/${ratImgScore}-star.svg`); 
+      ratCount.innerText = `(${ratC})`;
+
+      rating.appendChild(ratImg);
+      rating.appendChild(ratCount);
+      
+    } 
+    else{
+      score.innerText = "No Reviews"; 
+    }
+    card.appendChild(rating)
+
+    var time = document.createElement('time');
+    var totTime = searchForKey(data, 'totalTime');
+    time.innerText = convertTime(totTime);
+    card.appendChild(time);
+
+    var ingr = document.createElement('p');
+    ingr.className= "ingredients";
+    var ingrList = searchForKey(data, 'recipeIngredient');
+    ingr.innerText = createIngredientList(ingrList);
+    card.appendChild(ingr);
+
+    
+    this.shadowRoot.appendChild(card);
+    this.shadowRoot.appendChild(styleElem);
   }
 }
 
